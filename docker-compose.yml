@@ -1,0 +1,56 @@
+version: '3.9'
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+    restart: unless-stopped
+    command: >
+      sh -c "
+      ollama serve &
+      sleep 5 &&
+      ollama pull gemma2:9b &&
+      # ollama pull llama3.1:8b &&
+      # ollama pull qwen2.5:14b &&
+      wait
+      "
+
+  db:
+    image: postgres:16-alpine
+    container_name: postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+  bot:
+    build: ./bot
+    container_name: bot
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+      - ollama
+    restart: unless-stopped
+
+  init-schedule:
+    build: ./bot
+    command: python init-schedule.py
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+      - bot
+
+volumes:
+  postgres_data:
+  ollama:
