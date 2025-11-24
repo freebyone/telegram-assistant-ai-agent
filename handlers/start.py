@@ -1,7 +1,7 @@
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
-from keyboards import main_menu, cancel_kb
+from handlers.keyboards import main_menu, cancel_kb
 from db import db
 
 router = Router()
