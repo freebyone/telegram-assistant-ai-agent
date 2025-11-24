@@ -14,18 +14,16 @@ services:
       ollama serve &
       sleep 5 &&
       ollama pull gemma2:9b &&
-      # ollama pull llama3.1:8b &&
-      # ollama pull qwen2.5:14b &&
       wait
       "
 
   db:
-    image: postgres:16-alpine
+    image: bitnami/postgresql:latest
     container_name: postgres
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: postgres-secpas
     volumes:
       - ./data:/var/lib/postgresql/data
     ports:
